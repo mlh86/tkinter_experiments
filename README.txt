@@ -1,0 +1,1 @@
+Just some experimental apps to get an understanding of tkinter's capabilities

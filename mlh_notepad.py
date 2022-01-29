@@ -1,4 +1,22 @@
-# A basic text-editor
+"""
+A very basic text-editor with undo/redo capabilities and
+file open/save/save-as functions. A tkinter experiment, nothing more...
+
+    Copyright (C) 2022  Mohammad L. Hussain
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -26,14 +44,14 @@ btn_save.grid(row=2,column=0, pady=5)
 btn_saveas.grid(row=3,column=0,pady=5)
 F['borderwidth'] = 8
 
+BASE_TITLE = "MLH Text Editor"
+root.title(BASE_TITLE + " - Unsaved")
 current_file = ""
-base_title = "MLH Text Editor"
-root.title(base_title + " - Unsaved")
 
 def new_file(evt=None):
     global current_file
     if T.count(1.0,'end')[0] > 1 and T.edit_modified():
-        save_first = tkm.askyesnocancel("Save Current File?", 
+        save_first = tkm.askyesnocancel("Save Current File?",
             "Would you like to save changes to the current file first?")
         if save_first and not current_file:
             file_saved = save_file_as()
@@ -41,12 +59,13 @@ def new_file(evt=None):
                 return
         elif save_first:
             save_current_file()
-        elif save_first == None:
+        elif save_first is None:
             return
     T.delete(1.0,'end')
     T.edit_reset()
-    root.title(base_title + " - Unsaved")
+    root.title(BASE_TITLE + " - Unsaved")
     current_file = ""
+
 
 def open_file(evt=None):
     global current_file
@@ -65,19 +84,21 @@ def open_file(evt=None):
     fpath = tkfd.askopenfilename(
                 filetypes=[("Text Files", "*.txt"),("All Files", "*")])
     if not fpath:
-        return False
-    with open(fpath, 'r') as f:
+        return
+    with open(fpath, 'r') as file:
         T.delete(1.0,'end')
-        text=f.read()
+        text=file.read()
         T.insert('end', text)
         T.edit_reset()
-        root.title(base_title + " - " + f.name)
+        root.title(BASE_TITLE + " - " + file.name)
         current_file = fpath
+
 
 def save_current_file(evt=None):
     with open(current_file, 'w') as output_file:
         text = T.get(1.0,'end')
         output_file.write(text)
+
 
 def save_file_as(evt=None):
     global current_file
@@ -88,9 +109,10 @@ def save_file_as(evt=None):
     with open(fpath, "w") as output_file:
         text = T.get(1.0,'end')
         output_file.write(text)
-    root.title(base_title + " - " + fpath)
+    root.title(BASE_TITLE + " - " + fpath)
     current_file = fpath
     return True
+
 
 def save_file(evt=None):
     if current_file:
@@ -98,15 +120,25 @@ def save_file(evt=None):
     else:
         save_file_as()
 
+
 def select_all(evt=None):
     T.tag_add('sel',1.0,'end')
     return 'break'
 
+
 def do_undo(evt=None):
-    T.edit_undo()
+    try:
+        T.edit_undo()
+    except:
+        pass
+
 
 def do_redo(evt=None):
-    T.edit_redo()
+    try:
+        T.edit_redo()
+    except:
+        pass
+
 
 btn_new['command'] = new_file
 btn_open['command'] = open_file
